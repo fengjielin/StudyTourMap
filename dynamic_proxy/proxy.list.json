@@ -1,0 +1,22 @@
+[
+  {
+    "name": "devServe",
+    "ip": "",
+    "active": 0
+  },
+  {
+    "name": "prodServe",
+    "ip": "http://202.116.234.10/assistant-prod-api",
+    "active": 1
+  },
+  {
+    "name": "prodServe",
+    "ip": "https://proj.gzzjxx.cn/assistant-prod-api/",
+    "active": 1
+  },
+  {
+    "name": "localServe",
+    "ip": "http://127.0.0.1:8080/",
+    "active": 1
+  }
+]

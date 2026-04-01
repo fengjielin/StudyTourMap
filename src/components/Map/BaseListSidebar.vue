@@ -255,7 +255,7 @@
       max-height: none;
       border-right: none;
       border-bottom: none;
-      z-index: 1060;
+      z-index: 1202;
       transform: translateX(-100%);
       transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
       box-shadow: 8px 0 28px rgba(0, 0, 0, 0.18);

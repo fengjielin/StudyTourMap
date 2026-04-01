@@ -7,6 +7,8 @@ export interface Base {
   category: 'technology' | 'culture' | 'nature'
   position: [number, number]  // [lng, lat] GCJ-02
   images: string[]
+  description?: string
+  contacts?: string
 }
 
 export interface Route {

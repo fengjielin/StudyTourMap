@@ -1,0 +1,24 @@
+# 忽略构建输出
+dist/
+build/
+out/
+
+# 忽略依赖目录
+node_modules/
+
+# 忽略日志文件
+*.log
+
+# 忽略特定配置文件
+.env
+.env.local
+
+# 忽略生成的文件
+coverage/
+*.min.js
+*.min.css
+
+# 忽略特定目录
+public/styles/
+src/assets/icons/iconfont
+temp/

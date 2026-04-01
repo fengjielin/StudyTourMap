@@ -22,8 +22,7 @@
           class="mobile-list-toggle"
           :aria-expanded="mobileSidebarOpen"
           :aria-label="mobileSidebarOpen ? '关闭基地列表' : '打开基地列表'"
-          @click="mobileSidebarOpen = !mobileSidebarOpen"
-        >
+          @click="mobileSidebarOpen = !mobileSidebarOpen">
           <svg v-if="!mobileSidebarOpen" class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="8" y1="6" x2="21" y2="6" />
             <line x1="8" y1="12" x2="21" y2="12" />
@@ -52,8 +51,7 @@
               fillOpacity: 0.92,
               fillRule: 'evenodd',
               interactive: false,
-            }"
-          />
+            }" />
 
           <!-- 官方行政边界线 -->
           <l-polygon
@@ -66,8 +64,7 @@
               dashArray: '8 6',
               fill: false,
               interactive: false,
-            }"
-          />
+            }" />
 
           <BaseMarker v-for="base in mapStore.bases" :key="base.id" :base="base" :is-selected="base.id === mapStore.selectedBaseId" @click="handleMarkerClick(base)" />
         </l-map>
@@ -96,8 +93,10 @@
   import MapSwitcher from './MapSwitcher.vue';
   import BaseInfoPanel from '@/components/Panel/BaseInfoPanel.vue';
   import { useMobileBreakpoint } from '@/composables/useMobileBreakpoint';
+  import { useBasesStore } from '@/stores/bases';
 
   const mapStore = useMapStore();
+  const basesStore = useBasesStore();
   const { isMobile } = useMobileBreakpoint();
   const mobileSidebarOpen = ref(false);
   const mapContainerRef = ref<HTMLElement | null>(null);
@@ -144,9 +143,10 @@
   onMounted(async () => {
     mapStore.setLoading(true);
     try {
-      const [basesRes, boundaryRes] = await Promise.all([fetch('/data/bases.json'), fetch('/data/440115.geoJson')]);
+      const [basesRes, boundaryRes] = await Promise.all([fetch(import.meta.env.BASE_URL + '/data/bases.json'), fetch(import.meta.env.BASE_URL + '/data/440115.geoJson')]);
       const [bases, boundaryJson] = await Promise.all([basesRes.json(), boundaryRes.json() as Promise<NanshaBoundaryGeoJson>]);
       mapStore.setBases(bases);
+      basesStore.setBases(bases);
       boundaryData.value = parseNanshaBoundaryGeoJson(boundaryJson);
 
       const center = getCenterLngLat(boundaryJson);
@@ -318,7 +318,7 @@
       inset: 0;
       top: var(--map-header-height);
       background: rgba(15, 23, 42, 0.45);
-      z-index: 1040;
+      z-index: 1202;
       -webkit-tap-highlight-color: transparent;
     }
   }
@@ -341,8 +341,8 @@
       justify-content: center;
       position: absolute;
       left: 12px;
-      top: 12px;
-      z-index: 1050;
+      top: 5px;
+      z-index: 1201;
       width: 44px;
       height: 44px;
       padding: 0;
@@ -370,8 +370,9 @@
 
   @media (max-width: 768px) {
     .map-controls {
-      top: 12px;
+      top: 6px;
       right: 12px;
+      z-index: 1201;
     }
   }
 
@@ -385,5 +386,10 @@
   .slide-leave-to {
     transform: translateY(100%);
     opacity: 0;
+  }
+
+  // 隐藏 Leaflet 版权信息
+  :deep(.leaflet-control-attribution) {
+    display: none;
   }
 </style>

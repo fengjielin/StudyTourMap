@@ -39,11 +39,26 @@
             <span class="info-value">{{ base.address }}</span>
           </div>
         </div>
+
+        <div class="info-row" v-if="base.contacts">
+          <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path
+              d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+          </svg>
+          <div class="info-content">
+            <span class="info-label">联系方式</span>
+            <span class="info-value contacts">{{ base.contacts }}</span>
+          </div>
+        </div>
       </div>
 
-      <div class="image-section" v-if="base.images && base.images.length > 0">
-        <div class="image-gallery">
-          <img v-for="(img, index) in base.images" :key="index" :src="img" :alt="`${base.name} - 图片${index + 1}`" class="gallery-image" />
+      <!-- <div class="description-section" v-if="base.description">
+        <div class="description-content" v-html="base.description"></div>
+      </div> -->
+
+      <div class="image-section" v-if="resolvedImages.length > 0">
+        <div class="image-gallery" v-viewer>
+          <img v-for="(img, index) in resolvedImages" :key="index" :src="img" :alt="`${base.name} - 图片${index + 1}`" class="gallery-image" />
         </div>
       </div>
       <div class="image-placeholder" v-else>
@@ -63,28 +78,36 @@
         </svg>
         在高德地图导航
       </a>
-      <a :href="`https://api.map.com.tw/web/search.html?searchWord=${encodeURIComponent(base.name)}`" target="_blank" class="action-btn secondary">
+      <button class="action-btn secondary" @click="goToDetail">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="11" cy="11" r="8" />
           <line x1="21" y1="21" x2="16.65" y2="16.65" />
         </svg>
         查看详情
-      </a>
+      </button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
   import { computed } from 'vue';
+  import { useRouter } from 'vue-router';
   import type { Base } from '@/types';
 
   const props = defineProps<{
     base: Base;
   }>();
 
-  defineEmits<{
+  const emit = defineEmits<{
     close: [];
   }>();
+
+  const router = useRouter();
+
+  const goToDetail = () => {
+    emit('close');
+    router.push(`/base/${props.base.id}`);
+  };
 
   const categoryConfig = computed(() => {
     const configs = {
@@ -97,6 +120,23 @@
 
   const categoryIcon = computed(() => categoryConfig.value.icon);
   const categoryText = computed(() => categoryConfig.value.text);
+
+  // 使用 import.meta.glob 加载所有图片资源
+  const allImages = import.meta.glob('@/assets/images/*', { eager: true }) as Record<string, { default: string }>;
+
+  // 直接使用 bases.json 中定义的 images 属性
+  const resolvedImages = computed<string[]>(() => {
+    if (!props.base.images || props.base.images.length === 0) return [];
+    let images = props.base.images.map((img) => {
+      if (img.startsWith('@/')) {
+        // 将 @/assets/images/xxx 转换为 glob 键名
+        const key = img.replace('@/assets/images/', '/src/assets/images/');
+        return allImages[key]?.default || img;
+      }
+      return img;
+    });
+    return images.slice(0, 2);
+  });
 </script>
 
 <style lang="scss" scoped>
@@ -249,6 +289,35 @@
       color: var(--text-primary);
       line-height: 1.4;
     }
+
+    .info-value.contacts {
+      white-space: pre-line;
+    }
+  }
+
+  .description-section {
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .description-content {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text-primary);
+
+    :deep(p) {
+      margin: 0 0 12px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    :deep(strong) {
+      color: var(--primary);
+      font-weight: 600;
+    }
   }
 
   .image-section {
@@ -257,6 +326,7 @@
 
   .image-gallery {
     display: flex;
+    justify-content: center;
     gap: 8px;
     overflow-x: auto;
     padding-bottom: 8px;
@@ -296,8 +366,8 @@
     display: flex;
     gap: 12px;
     padding: 16px 20px;
-    background: var(--background);
-    border-top: 1px solid var(--border);
+    // background: var(--background);
+    // border-top: 1px solid var(--border);
   }
 
   .action-btn {
