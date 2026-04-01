@@ -19,5 +19,8 @@ selenium-debug.log
 *.sln
 *.local
 
+.git
+.svn
+
 package-lock.json
 yarn.lock
