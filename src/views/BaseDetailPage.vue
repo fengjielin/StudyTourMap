@@ -73,7 +73,7 @@
       </div>
 
       <div class="action-section">
-        <a :href="`https://uri.amap.com/search?keyword=${encodeURIComponent(base.address)}&view=map`" target="_blank" class="action-btn primary">
+        <a :href="navigationUrl" target="_blank" class="action-btn primary">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polygon points="3 11 22 2 13 21 11 13 3 11" />
           </svg>
@@ -89,7 +89,7 @@
 </template>
 
 <script setup lang="ts">
-  import { computed } from 'vue';
+  import { computed, ref, onMounted } from 'vue';
   import { useRouter } from 'vue-router';
   import { useBasesStore } from '@/stores/bases';
 
@@ -116,6 +116,43 @@
   const categoryIcon = computed(() => categoryConfig.value.icon);
   const categoryText = computed(() => categoryConfig.value.text);
   const categoryColor = computed(() => categoryConfig.value.color);
+
+  // 用户当前位置
+  const userPosition = ref<[number, number] | null>(null);
+
+  // 获取用户当前位置
+  const getCurrentLocation = () => {
+    if (!navigator.geolocation) return;
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        userPosition.value = [position.coords.longitude, position.coords.latitude];
+      },
+      () => {
+        // 定位失败静默处理
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 300000,
+      },
+    );
+  };
+
+  // 页面加载时自动获取位置
+  onMounted(() => {
+    getCurrentLocation();
+  });
+
+  // 生成导航链接
+  const navigationUrl = computed(() => {
+    if (!base.value) return '#';
+    const dest = `${base.value.position[0]},${base.value.position[1]},${encodeURIComponent(base.value.name)}`;
+    if (userPosition.value) {
+      return `https://uri.amap.com/navigation?from=${userPosition.value[0]},${userPosition.value[1]},我的位置&to=${dest}&mode=car&callnative=1`;
+    }
+    return `https://uri.amap.com/navigation?to=${dest}&mode=car&callnative=1`;
+  });
 
   // 使用 import.meta.glob 加载所有图片资源
   const allImages = import.meta.glob('@/assets/images/*', { eager: true }) as Record<string, { default: string }>;
@@ -234,7 +271,7 @@
       display: flex;
       align-items: flex-start;
       gap: 12px;
-      padding: 12px 14px;;
+      padding: 12px 14px;
       background: var(--surface);
       border-radius: var(--radius-md);
 

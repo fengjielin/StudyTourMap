@@ -72,7 +72,7 @@
     </div>
 
     <div class="panel-footer">
-      <a :href="`https://uri.amap.com/search?keyword=${encodeURIComponent(base.address)}&view=map`" target="_blank" class="action-btn primary">
+      <a :href="navigationUrl" target="_blank" class="action-btn primary">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polygon points="3 11 22 2 13 21 11 13 3 11" />
         </svg>
@@ -90,7 +90,7 @@
 </template>
 
 <script setup lang="ts">
-  import { computed } from 'vue';
+  import { computed, ref, onMounted } from 'vue';
   import { useRouter } from 'vue-router';
   import type { Base } from '@/types';
 
@@ -103,6 +103,65 @@
   }>();
 
   const router = useRouter();
+
+  // 用户当前位置
+  const userPosition = ref<[number, number] | null>(null);
+  const isLocating = ref(false);
+  const locateError = ref<string | null>(null);
+
+  // 获取用户当前位置
+  const getCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      locateError.value = '浏览器不支持定位';
+      return;
+    }
+
+    isLocating.value = true;
+    locateError.value = null;
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        userPosition.value = [position.coords.longitude, position.coords.latitude];
+        isLocating.value = false;
+      },
+      (error) => {
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            locateError.value = '定位权限被拒绝';
+            break;
+          case error.POSITION_UNAVAILABLE:
+            locateError.value = '无法获取位置';
+            break;
+          case error.TIMEOUT:
+            locateError.value = '定位超时';
+            break;
+          default:
+            locateError.value = '定位失败';
+        }
+        isLocating.value = false;
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 300000,
+      },
+    );
+  };
+
+  // 页面加载时自动获取位置
+  onMounted(() => {
+    getCurrentLocation();
+  });
+
+  // 生成导航链接
+  const navigationUrl = computed(() => {
+    const dest = `${props.base.position[0]},${props.base.position[1]},${encodeURIComponent(props.base.name)}`;
+    if (userPosition.value) {
+      const from = `${userPosition.value[0]},${userPosition.value[1]}`;
+      return `https://uri.amap.com/navigation?from=${from},我的位置&to=${dest}&mode=car&callnative=1`;
+    }
+    return `https://uri.amap.com/navigation?to=${dest}&mode=car&callnative=1`;
+  });
 
   const goToDetail = () => {
     emit('close');
