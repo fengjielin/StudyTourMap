@@ -31,7 +31,6 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, ref } from 'vue';
   import { useMapStore } from '@/stores/mapStore';
   import type { Base } from '@/types';
 
@@ -103,6 +102,8 @@
       background: var(--background);
       color: var(--text-primary);
       outline: none;
+      font-family: 'Microsoft YaHei', '微软雅黑', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
 
       &::placeholder {
         color: var(--text-muted);
@@ -157,6 +158,8 @@
     background: var(--surface);
     cursor: pointer;
     transition: background var(--transition-fast);
+    font-family: 'Microsoft YaHei', '微软雅黑', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+      'Segoe UI Symbol', 'Noto Color Emoji';
 
     &:hover {
       background: var(--background);

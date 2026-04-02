@@ -6,6 +6,7 @@
           <line x1="19" y1="12" x2="5" y2="12" />
           <polyline points="12 19 5 12 12 5" />
         </svg>
+        <span>返回地图</span>
       </button>
     </header>
 
@@ -40,17 +41,6 @@
             <span class="info-value">{{ base.address }}</span>
           </div>
         </div>
-
-        <div class="info-row" v-if="base.contacts">
-          <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path
-              d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-          </svg>
-          <div class="info-content">
-            <span class="info-label">联系方式</span>
-            <span class="info-value contacts">{{ base.contacts }}</span>
-          </div>
-        </div>
       </div>
 
       <div class="image-section" v-if="resolvedImages.length > 0">
@@ -72,6 +62,19 @@
         <div class="description-content" v-html="base.description"></div>
       </div>
 
+      <div class="info-section">
+        <div class="info-row" v-if="base.contacts">
+          <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path
+              d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+          </svg>
+          <div class="info-content">
+            <span class="info-label">联系方式</span>
+            <span class="info-value contacts">{{ base.contacts }}</span>
+          </div>
+        </div>
+      </div>
+
       <div class="action-section">
         <a :href="navigationUrl" target="_blank" class="action-btn primary">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -89,7 +92,6 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, ref, onMounted } from 'vue';
   import { useRouter } from 'vue-router';
   import { useBasesStore } from '@/stores/bases';
 
@@ -193,21 +195,23 @@
     box-shadow: 0 2px 10px var(--shadow);
 
     .back-btn {
-      width: 36px;
-      height: 36px;
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      justify-content: center;
+      gap: 6px;
+      padding: 8px 14px;
       border: none;
       background: rgba(255, 255, 255, 0.2);
       border-radius: var(--radius-full);
       cursor: pointer;
       transition: all var(--transition-fast);
+      color: white;
+      font-size: 14px;
+      font-weight: 500;
 
       svg {
-        width: 20px;
-        height: 20px;
-        color: white;
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
       }
 
       &:active {
@@ -259,6 +263,7 @@
     font-size: 14px;
     color: var(--text-secondary);
     margin: 0;
+    color: orange;
   }
 
   .info-section {
@@ -317,7 +322,8 @@
     margin-bottom: 20px;
 
     .image-gallery {
-      display: flex;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
       justify-content: center;
       flex-wrap: wrap;
       gap: 8px;
@@ -325,8 +331,8 @@
       padding-bottom: 8px;
 
       .gallery-image {
-        width: 140px;
-        height: 100px;
+        width: 100%;
+        height: 85%;
         object-fit: cover;
         border-radius: var(--radius-md);
         flex-shrink: 0;
@@ -423,11 +429,17 @@
   @media (min-width: 768px) {
     .detail-content {
       padding: 24px 20px 60px;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
     }
 
     .image-section .image-gallery .gallery-image {
-      width: 180px;
-      height: 120px;
+      width: 100%;
+      height: 85%;
     }
   }
 

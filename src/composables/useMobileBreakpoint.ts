@@ -1,5 +1,3 @@
-import { ref, onMounted, onUnmounted } from 'vue';
-
 /** 与样式断点一致：max-width: 768px */
 export function useMobileBreakpoint(breakpointPx = 768) {
   const isMobile = ref(false);

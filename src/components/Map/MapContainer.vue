@@ -6,7 +6,7 @@
           <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
           <circle cx="12" cy="10" r="3" />
         </svg>
-        <h1>南沙科普研学地图</h1>
+        <h1>南沙区中小学科普研学地图</h1>
       </div>
       <p class="header-subtitle">探索科技与自然的研学之旅</p>
     </div>
@@ -16,14 +16,14 @@
       <BaseListSidebar :class="{ 'sidebar-mobile-open': isMobile && mobileSidebarOpen }" @select="handleListSelect" />
 
       <div class="map-wrapper">
-        <button
+        <el-button
           v-if="isMobile"
-          type="button"
+          type="primary"
           class="mobile-list-toggle"
           :aria-expanded="mobileSidebarOpen"
           :aria-label="mobileSidebarOpen ? '关闭基地列表' : '打开基地列表'"
           @click="mobileSidebarOpen = !mobileSidebarOpen">
-          <svg v-if="!mobileSidebarOpen" class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <!-- <svg v-if="!mobileSidebarOpen" class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="8" y1="6" x2="21" y2="6" />
             <line x1="8" y1="12" x2="21" y2="12" />
             <line x1="8" y1="18" x2="21" y2="18" />
@@ -34,8 +34,9 @@
           <svg v-else class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="18" y1="6" x2="6" y2="18" />
             <line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
-        </button>
+          </svg> -->
+          基地查询
+        </el-button>
 
         <l-map :zoom="mapStore.mapZoom" :center="mapStore.mapCenter" :options="{ zoomControl: false }" @ready="onMapReady">
           <l-tile-layer :url="currentTileUrl" :attribution="currentAttribution" :options="tileOptions" />
@@ -66,21 +67,20 @@
               interactive: false,
             }" />
 
-          <BaseMarker v-for="base in mapStore.bases" :key="base.id" :base="base" :is-selected="base.id === mapStore.selectedBaseId" @click="handleMarkerClick(base)" />
+          <BaseMarker v-for="(base, index) in mapStore.bases" :key="base.id" :base="base" :is-selected="base.id === mapStore.selectedBaseId" :index="index" @click="handleMarkerClick(base)" />
         </l-map>
 
-        <MapSwitcher class="map-controls" />
+        <!-- <MapSwitcher class="map-controls" /> -->
       </div>
     </div>
 
-    <Transition name="slide">
+    <!-- <Transition name="slide">
       <BaseInfoPanel v-if="mapStore.selectedBase" :base="mapStore.selectedBase" @close="handleClosePanel" />
-    </Transition>
+    </Transition> -->
   </div>
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue';
   import { LMap, LTileLayer, LPolygon } from '@vue-leaflet/vue-leaflet';
   import { control, latLngBounds, type Map as LeafletMap, type LatLngBoundsExpression } from 'leaflet';
   import { useMapStore } from '@/stores/mapStore';
@@ -94,6 +94,9 @@
   import BaseInfoPanel from '@/components/Panel/BaseInfoPanel.vue';
   import { useMobileBreakpoint } from '@/composables/useMobileBreakpoint';
   import { useBasesStore } from '@/stores/bases';
+
+  import { useRouter } from 'vue-router';
+  const router = useRouter();
 
   const mapStore = useMapStore();
   const basesStore = useBasesStore();
@@ -216,6 +219,8 @@
     if (mapInstance.value) {
       mapInstance.value.flyTo([base.position[1], base.position[0]], 14, { duration: 0.8 });
     }
+
+    goToDetail(base);
   }
 
   /** 侧栏点击：与地图点选一致，并打开对应 Leaflet 弹窗 */
@@ -226,6 +231,10 @@
       mapStore.openMarkerPopup(base.id);
     });
   }
+
+  const goToDetail = (base: Base) => {
+    router.push(`/base/${base.id}`);
+  };
 
   function handleClosePanel() {
     mapStore.selectBase(null);
@@ -343,16 +352,6 @@
       left: 12px;
       top: 5px;
       z-index: 1201;
-      width: 44px;
-      height: 44px;
-      padding: 0;
-      border: none;
-      border-radius: 12px;
-      background: var(--surface);
-      color: var(--text-primary);
-      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
     }
 
     .mobile-list-toggle .toggle-icon {

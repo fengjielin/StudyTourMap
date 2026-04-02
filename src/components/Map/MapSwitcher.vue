@@ -43,7 +43,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
 import { useMapStore } from '@/stores/mapStore'
 import { tileProviders, type TileProviderId } from '@/core/TileProvider'
 

@@ -46,6 +46,7 @@ const config: UserConfigFn = ({ mode, command }) => {
           entryFileNames: 'static/js/[name]-[hash].js',
           assetFileNames: 'static/[ext]/[name]-[hash].[ext]',
           manualChunks: {
+            'element-plus': ['element-plus'],
             vendor: ['vue', 'vue-router', 'pinia'],
           },
         },
