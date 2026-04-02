@@ -67,7 +67,7 @@
               interactive: false,
             }" />
 
-          <BaseMarker v-for="(base, index) in mapStore.bases" :key="base.id" :base="base" :is-selected="base.id === mapStore.selectedBaseId" :index="index" @click="handleMarkerClick(base)" />
+          <BaseMarker v-for="(base, index) in mapStore.bases" :allImages="allImages" :key="base.id" :base="base" :is-selected="base.id === mapStore.selectedBaseId" :index="index" @click="handleMarkerClick(base)" />
         </l-map>
 
         <!-- <MapSwitcher class="map-controls" /> -->
@@ -94,6 +94,9 @@
   import BaseInfoPanel from '@/components/Panel/BaseInfoPanel.vue';
   import { useMobileBreakpoint } from '@/composables/useMobileBreakpoint';
   import { useBasesStore } from '@/stores/bases';
+
+  // 使用 import.meta.glob 加载所有图片资源
+  const allImages = import.meta.glob('@/assets/images/*', { eager: true }) as Record<string, { default: string }>;
 
   import { useRouter } from 'vue-router';
   const router = useRouter();
@@ -225,7 +228,10 @@
 
   /** 侧栏点击：与地图点选一致，并打开对应 Leaflet 弹窗 */
   function handleListSelect(base: Base) {
-    handleMarkerClick(base);
+    mapStore.selectBase(base.id);
+    if (mapInstance.value) {
+      mapInstance.value.flyTo([base.position[1], base.position[0]], 14, { duration: 0.8 });
+    }
     if (isMobile.value) mobileSidebarOpen.value = false;
     nextTick(() => {
       mapStore.openMarkerPopup(base.id);

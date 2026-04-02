@@ -149,7 +149,7 @@
   // 生成导航链接
   const navigationUrl = computed(() => {
     if (!base.value) return '#';
-    const dest = `${base.value.position[0]},${base.value.position[1]},${encodeURIComponent(base.value.name)}`;
+    const dest = `${base.value.position[0]},${base.value.position[1]},${encodeURIComponent(base.value.address)}`;
     if (userPosition.value) {
       return `https://uri.amap.com/navigation?from=${userPosition.value[0]},${userPosition.value[1]},我的位置&to=${dest}&mode=car&callnative=1`;
     }

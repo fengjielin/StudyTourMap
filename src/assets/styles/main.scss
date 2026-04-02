@@ -97,6 +97,14 @@ body {
   }
 }
 
+// Leaflet marker 容器：固定 iconSize=200×40，卡片绝对定位后右侧留白处不让接收点击
+.leaflet-marker-icon.custom-base-marker-wrapper {
+  pointer-events: none !important;
+  background: transparent !important;
+  border: none !important;
+  overflow: visible;
+}
+
 // Leaflet 地图样式覆盖
 .leaflet-container {
   font-family: 'Microsoft YaHei', '微软雅黑', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',

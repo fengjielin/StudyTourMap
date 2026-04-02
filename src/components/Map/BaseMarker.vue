@@ -13,6 +13,7 @@
     base: Base;
     isSelected: boolean;
     index: number;
+    allImages: Record<string, { default: string }>;
   }>();
 
   defineEmits<{
@@ -52,7 +53,12 @@
 
   const markerIcon = computed<any>(() => {
     const cardOnLeft = isCardOnLeft.value;
-    const firstImage = props.base.images?.[0]?.replace('@/assets/images/', import.meta.env.BASE_URL + '/src/assets/images/');
+    let firstImage = props.allImages[props.base.images?.[0]]?.default;
+
+    if (props.base.images?.[0].startsWith('@/')) {
+      const key = props.base.images?.[0].replace('@/assets/images/', '/src/assets/images/');
+      firstImage = props.allImages[key]?.default;
+    }
     const cardImageHtml = firstImage ? `<div class="marker-card-image"><img src="${firstImage}" alt="${props.base.name}" /></div>` : '';
 
     return divIcon({
@@ -87,16 +93,10 @@
 </script>
 
 <style lang="scss">
-  :deep(.custom-base-marker-wrapper) {
-    background: transparent !important;
-    border: none !important;
-  }
-
   .base-marker-container {
     position: relative;
     width: 200px;
     height: 40px;
-    cursor: pointer;
 
     /* 卡片在定位点左侧：整块右缘对齐在定位点右侧，flex 为 [卡片][连线]，连线指向定位点 */
     &.card-left {
@@ -143,6 +143,8 @@
   }
 
   .marker-point {
+    pointer-events: auto;
+    cursor: pointer;
     position: absolute;
     left: 0;
     top: 10px; // 20 (anchor center) - 10 (half of 20px height)
@@ -198,6 +200,7 @@
 
   .marker-card-area {
     pointer-events: auto;
+    cursor: pointer;
   }
 
   .marker-card {
@@ -325,12 +328,12 @@
       }
     }
 
-    .base-marker-container.card-left .marker-card-area {
-      left: 20px;
-    }
+    // .base-marker-container.card-left .marker-card-area {
+    //   left: 20px;
+    // }
 
-    .base-marker-container.card-right .marker-card-area {
-      left: 20px;
-    }
+    // .base-marker-container.card-right .marker-card-area {
+    //   left: 20px;
+    // }
   }
 </style>
